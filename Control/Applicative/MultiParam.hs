@@ -5,6 +5,11 @@
 --  The contained data type is an explicit type parameter,
 --  allowing instances to be made dependent on it.
 --
+--  The Applicative type class is split into two classes:
+--  @Pure f a@, which provides @pure :: a -> f a@, and
+--  @Applicative' f a b@, which provides
+--  @(<*>) :: f (a -> b) -> f a -> f b@.
+--
 --  Note that, unlike regular monads, multi-parameter
 --  monads with restrictions do not always imply the existence
 --  of (meaningul) instances of Applicative\'.
@@ -26,6 +31,7 @@
 --  Adapted from 'http://okmij.org/ftp/Haskell/types.html#restricted-datatypes'.
 module Control.Applicative.MultiParam (
    Applicative'(..),
+   Pure(..),
    ) where
 
 import qualified Control.Monad as Mo
@@ -37,35 +43,30 @@ import Text.ParserCombinators.ReadP(ReadP)
 import Text.ParserCombinators.ReadPrec(ReadPrec)
 import GHC.Conc(STM)
 
+class Pure f a where
+   pure :: a -> f a
 
 class Functor' f a b => Applicative' f a b where
-   pure :: a -> f a
    (<*>) :: f (a -> b) -> f a -> f b
 
-instance Applicative' [] a b where
-   pure = Mo.return
-   f <*> x = f Ap.<*> x
+instance Pure [] a where pure = Mo.return
+instance Applicative' [] a b where f <*> x = f Ap.<*> x
 
-instance Applicative' IO a b where
-   pure = Mo.return
-   f <*> x = f Ap.<*> x
+instance Pure IO a where pure = Mo.return
+instance Applicative' IO a b where f <*> x = f Ap.<*> x
 
-instance Applicative' Maybe a b where
-   pure = Mo.return
-   f <*> x = f Ap.<*> x
+instance Pure Maybe a where pure = Mo.return
+instance Applicative' Maybe a b where f <*> x = f Ap.<*> x
 
-instance Applicative' ReadP a b where
-   pure = Mo.return
-   f <*> x = f Ap.<*> x
+instance Pure ReadP a where pure = Mo.return
+instance Applicative' ReadP a b where f <*> x = f Ap.<*> x
 
-instance Applicative' ReadPrec a b where
-   pure = Mo.return
-   f <*> x = f Ap.<*> x
+instance Pure ReadPrec a where pure = Mo.return
+instance Applicative' ReadPrec a b where f <*> x = f Ap.<*> x
 
-instance Applicative' STM a b where
-   pure = Mo.return
-   f <*> x = f Ap.<*> x
+instance Pure STM a where pure = Mo.return
+instance Applicative' STM a b where f <*> x = f Ap.<*> x
 
+instance Ord a => Pure Set.Set a where pure = Set.singleton
 instance (Ord a, Ord b) => Applicative' Set.Set a b where
-   pure = Set.singleton
    f <*> x = Set.fromList $ Set.toList f Ap.<*> Set.toList x
