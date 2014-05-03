@@ -18,6 +18,8 @@ module Data.Functor.MultiParam (
    (<$>)
    ) where
 
+import Prelude hiding (Functor(..))
+import qualified Data.Functor as Fu(fmap)
 import qualified Data.Set as Set
 
 import Text.ParserCombinators.ReadP(ReadP)
@@ -29,18 +31,22 @@ import Control.Applicative(ZipList)
 infixl 4 <$>
 
 class Functor' f a b where
-   fmap' :: (a -> b) -> f a -> f b
-   --(<$) :: a -> f b -> f a
-   --x <$ f = fmap' (const x) f
+   -- |Applies a function over a functor.
+   fmap :: (a -> b) -> f a -> f b
+   -- |Replaces a value inside a functor with another value,
+   --  discarding the old, but preserving the functor's structure.
+   (<$) :: Functor' f b a => a -> f b -> f a
+   x <$ f = fmap (const x) f
 
+-- |Infix version of @fmap@.
 (<$>) :: (Functor' f a b) => (a -> b) -> f a -> f b
-(<$>) = fmap'
+(<$>) = fmap
 
-instance Functor' [] a b where fmap' = fmap
-instance Functor' IO a b where fmap' = fmap
-instance Functor' Maybe a b where fmap' = fmap
-instance Functor' ReadP a b where fmap' = fmap
-instance Functor' ReadPrec a b where fmap' = fmap
-instance Functor' STM a b where fmap' = fmap
-instance Functor' ZipList a b where fmap' = fmap
-instance (Ord a, Ord b) => Functor' Set.Set a b where fmap' = Set.map
+instance Functor' [] a b where fmap = Fu.fmap
+instance Functor' IO a b where fmap = Fu.fmap
+instance Functor' Maybe a b where fmap = Fu.fmap
+instance Functor' ReadP a b where fmap = Fu.fmap
+instance Functor' ReadPrec a b where fmap = Fu.fmap
+instance Functor' STM a b where fmap = Fu.fmap
+instance Functor' ZipList a b where fmap = Fu.fmap
+instance (Ord a, Ord b) => Functor' Set.Set a b where fmap = Set.map
