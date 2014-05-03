@@ -16,7 +16,7 @@ The only difference to Functor is the presence of the type variables `a` and `b`
 import qualified Data.Set as S
 
 instance (Ord a, Ord b) => Functor' S.Set a where
-   fmap = S.map
+   fmap' = S.map
 ```
 
 #### Control.Applicative.MultiParam
@@ -46,7 +46,7 @@ instance (Ord a, Ord b) => Applicative' Set a b where
 ```
 
 The problem comes when one tries to use `<*>` with sets:
-```
+```haskell
 > :t \f -> f <*> fromList ([1,2,3]::[Integer])
  :: Ord b => Set (Integer -> b) -> Set b
 ```
@@ -70,3 +70,13 @@ class (Pure m a, Applicative' m a b) => Monad' m a b where
 2. It contains `join` as a definable method.
 3. It doesn't contain `return`, since `pure` already provides the same functionality.
 
+##### Issues with Monad's type variables
+
+`x >>= f` could be defined as `join (fmap' f x)` in ordinary monads, but not in `Monad'`. The reason is the type variable `b`, which is left ambiguous in that definition:
+
+```haskell
+> :t \x f -> join (fmap' f x)
+(Functor' m a (m b), Monad' m b x, Monad' m (m b) b) => m a -> (a -> m b) -> m b
+```
+
+Note the spurious type variable `x` induced by `join :: Monad' m b x => m (m b) -> m b`. Since `join`'s signature only mentions one type variable `b`, the second is left ambiguous. In 'ordinary' usage, it will be discarded, but as a default definition for `(>>=)` in `Monad`, it wouldn't type check.
