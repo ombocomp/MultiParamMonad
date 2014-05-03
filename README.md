@@ -1,9 +1,14 @@
 MultiParamMonad
 ===============
 
-Versions of Functor, Applicative, and Monad which include their contained data types as type parameters, allowing restrictions on them in the instance declarations. The structure of the new type classes is as follows:
+Versions of Functor, Applicative, and Monad which include their contained data types as type parameters, allowing restrictions on them in the instance declarations. Every Functor, Applicative and Monad is also an instance of `Functor'`, `Applicative'` and `Monad'`, but the explicit type variables allow additional instances like `Set`.
+The hierarchy of the new type classes is as follows:
 
-#### Data.Functor.MultiParam
+```
+Functor' => Pure & Applicative' => Monad' => MonadPlus'
+```
+
+### Data.Functor.MultiParam
 
 ```haskell
 class Functor' f a b where
@@ -19,7 +24,7 @@ instance (Ord a, Ord b) => Functor' S.Set a where
    fmap' = S.map
 ```
 
-#### Control.Applicative.MultiParam
+### Control.Applicative.MultiParam
 
 ```haskell
 class Pure f a where
@@ -53,7 +58,7 @@ The problem comes when one tries to use `<*>` with sets:
 
 The `Set (Integer -> b)` object cannot be constructed. Nonetheless, this only precludes the use of `<*>` in the context of sets, but doesn't pose any further problems.
 
-#### Control.Monad.MultiParam
+### Control.Monad.MultiParam
 
 ```haskell
 class (Pure m a, Applicative' m a b) => Monad' m a b where
@@ -80,3 +85,13 @@ class (Pure m a, Applicative' m a b) => Monad' m a b where
 ```
 
 Note the spurious type variable `x` induced by `join :: Monad' m b x => m (m b) -> m b`. Since `join`'s signature only mentions one type variable `b`, the second is left ambiguous. In 'ordinary' usage, it will be discarded, but as a default definition for `(>>=)` in `Monad`, it wouldn't type check.
+
+#### MonadPlus'
+
+```haskell
+class (Monad' m a a) => MonadPlus' m a b where
+   mzero :: m a
+   mplus :: m a -> m a -> m a
+```
+
+`MonadPlus'` is a straightforward adaptation of `Control.Monad.MonadPlus`.
