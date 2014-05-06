@@ -12,7 +12,8 @@
 --  can be declared for Set:
 --  @instance (Ord a, Ord b) => Functor Set a b where fmap = map@.
 --
---  Adapted from 'http://okmij.org/ftp/Haskell/types.html#restricted-datatypes'.
+--  Adapted from Oleg Kiselyov's
+--  'http://okmij.org/ftp/Haskell/types.html#restricted-datatypes'.
 module Data.Functor.MultiParam (
    Functor'(..),
    (<$>)

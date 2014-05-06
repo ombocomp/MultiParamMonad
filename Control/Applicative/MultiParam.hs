@@ -28,7 +28,8 @@
 --  is not constructible. Should the user declare '(Ord (a -> b))', however,
 --  @<*>@ will work.
 --
---  Adapted from 'http://okmij.org/ftp/Haskell/types.html#restricted-datatypes'.
+--  Adapted from Oleg Kiselyov's
+--  'http://okmij.org/ftp/Haskell/types.html#restricted-datatypes'.
 module Control.Applicative.MultiParam (
    Applicative'(..),
    Pure(..),

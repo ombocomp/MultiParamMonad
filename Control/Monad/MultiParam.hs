@@ -16,7 +16,8 @@
 --  the functions in this module clash heavily with those
 --  of @Control.Monad@ and therefore, a qualified import is recommended.
 --
---  Adapted from 'http://okmij.org/ftp/Haskell/types.html#restricted-datatypes'.
+--  Adapted from Oleg Kiselyov's
+--  'http://okmij.org/ftp/Haskell/types.html#restricted-datatypes'.
 module Control.Monad.MultiParam (
    Monad'(..),
    MonadPlus'(..),
